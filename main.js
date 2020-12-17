@@ -1,6 +1,21 @@
-const todos = [];
+const todos = JSON.parse(localStorage.getItem('todos')) || [];
 
+const render = () => {
+    const todoList = document.getElementById('todo-list');
+    const todosTemplate = todos.map(t => "<li>" + t + "</li>");
+    todoList.innerHTML = todosTemplate.join('');
+    const elementos = document.querySelectorAll('#todo-list li');
+    elementos.forEach((elemento, i) => {
+        elemento.addEventListener('click', function () {
+            elemento.parentNode.removeChild(elemento);
+            todos.splice(i, 1);
+            refresh(todos);
+            render();
+        })
+    })
+}
 window.onload = () => {
+    render();
     const form = document.getElementById('todo-form');
     form.onsubmit = (e) => {
         e.preventDefault();
@@ -8,11 +23,12 @@ window.onload = () => {
         const taskText = task.value;
         task.value = '';
         todos.push(taskText);
-        const todoList = document.getElementById('todo-list');
-        const todosTemplate = todos.map(t => "<li>" + t + "</li>");
-        todoList.innerHTML = todosTemplate.join('');
+        refresh(todos);
+        render();
 
     }
-    const btnAdd = document.getElementById('btnAdd');
-
+    const refresh = (todos) => {
+        const todosStrings = JSON.stringify(todos);
+        localStorage.setItem('todos', todosStrings);
+    }
 }
